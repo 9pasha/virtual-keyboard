@@ -1,0 +1,19 @@
+{
+  "name": "keyboard",
+  "version": "0.0.1",
+  "description": "Simple PC keyboard(ru/en)",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "keyboard"
+  ],
+  "author": "9pasha",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2"
+  }
+}
