@@ -33,7 +33,7 @@ const Keyboard = {
       document.querySelector('.keyboard').appendChild(row);
       for (let j = 0; j < alphabet[i].length; j = 1 + j) {
         const btn = document.createElement('div');
-        btn.className = `btn btn-${i + 1}-${j + 1}`;
+        btn.className = `btn btn-${i + 1}-${j + 1} ${alphabet[i][j]}`;
         document.querySelector(`.row-${i + 1}`).append(btn);
         btn.innerHTML = alphabet[i][j];
         this.createMainKeys(btn, alphabet[i][j]);
@@ -66,7 +66,7 @@ const Keyboard = {
     //console.log(buttons);
     for (let i = 0; i < buttons.length; i = 1 + i) {
       buttons[i].addEventListener('mousedown', (e) => {
-        console.log(buttons);
+        //console.log(buttons);
         const keyMessage = e.target.innerHTML;
         if (this.isFind(e.target.className, 'space')) {
           out.value += ' ';
@@ -84,11 +84,9 @@ const Keyboard = {
             out.value += keyMessage;
           }
         }
-        e.target.style.backgroundColor = 'rgb(129, 61, 255)';
-        e.target.style.borderRadius = '15px';
+        this.animation(e.target);
         e.target.addEventListener('mouseup', () => {
-          e.target.style.backgroundColor = '';
-          e.target.style.borderRadius = '';
+          this.defaultStyle(e.target);
         });
       });
     }
@@ -96,8 +94,14 @@ const Keyboard = {
 
   animation(el) {
     const element = el;
-    element.target.style.backgroundColor = 'rgb(129, 61, 255)';
-    element.target.style.borderRadius = '12px';
+    element.style.backgroundColor = 'rgb(129, 61, 255)';
+    element.style.borderRadius = '12px';
+  },
+
+  defaultStyle(element) {
+    const currElement = element;
+    currElement.style.backgroundColor = '';
+    currElement.style.borderRadius = '';
   },
 
   isUpperMode() {
@@ -112,16 +116,39 @@ const Keyboard = {
   },
 
   listenRealKeyboard() {
-    document.addEventListener('keydown', (e) => {
+    window.addEventListener('keydown', (e) => {
       const currClass = `.${e.key.toLowerCase()}`;
-      console.log(currClass);
       const btn = document.querySelector(currClass);
       if (btn) {
-        //this.animation(btn);
-        btn.style.backgroundColor = 'rgb(129, 61, 255)';
-        btn.style.borderRadius = '12px';
+        this.printMessage(btn, document.querySelector('.input'));
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
       }
     });
+  },
+
+  printMessage(button, output) {
+    const out = output;
+    const currElement = button;
+    const keyMessage = currElement.innerHTML;
+    if (this.isFind(currElement.className, 'space')) {
+      out.value += ' ';
+    }
+    if (this.isFind(currElement.className, 'backspace')) {
+      const value = out.value.split('');
+      value.pop();
+      value.pop();
+      out.value = value.join('');
+    }
+    if (!this.isFind(currElement.className, 'sys-btn')) {
+      if (this.capsLock) {
+        out.value += keyMessage.toUpperCase();
+      } else {
+        out.value += keyMessage;
+      }
+    }
   },
 
   changeLanguage() {
