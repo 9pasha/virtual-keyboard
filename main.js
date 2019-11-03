@@ -1,6 +1,8 @@
 const Keyboard = {
   capsLock: false,
   shift: false,
+  alt: false,
+  lang: 'rus',
 
   alphabet: {
     rus: [['ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'], ['Tab', 'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ', '\\', 'DEL'], ['CapsLock', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'Enter'], ['Shift', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '/', 'Up', 'Shift'], ['Ctrl', 'Win', 'Alt', 'Space', 'Alt', 'Left', 'Down', 'Right', 'Ctrl']],
@@ -57,10 +59,14 @@ const Keyboard = {
     } return false;
   },
 
-  print(output, buttons) {
+  print(output, className) {
     const out = output;
+    const elemClass = `.${className}`;
+    const buttons = document.querySelectorAll(elemClass);
+    //console.log(buttons);
     for (let i = 0; i < buttons.length; i = 1 + i) {
       buttons[i].addEventListener('mousedown', (e) => {
+        console.log(buttons);
         const keyMessage = e.target.innerHTML;
         if (this.isFind(e.target.className, 'space')) {
           out.value += ' ';
@@ -102,21 +108,48 @@ const Keyboard = {
       } else {
         this.capsLock = true;
       }
-      console.log(this.capsLock);
     });
-
   },
 
-  // changeLanguage() {
-  //   const shift = ;
-  // },
+  listenRealKeyboard() {
+    document.addEventListener('keydown', (e) => {
+      const currClass = `.${e.key.toLowerCase()}`;
+      console.log(currClass);
+      const btn = document.querySelector(currClass);
+      if (btn) {
+        //this.animation(btn);
+        btn.style.backgroundColor = 'rgb(129, 61, 255)';
+        btn.style.borderRadius = '12px';
+      }
+    });
+  },
+
+  changeLanguage() {
+    document.addEventListener('keydown', (e) => {
+      if ((e.keyCode === 16 && e.ctrlKey) || (e.keyCode === 17 && e.shiftKey)) {
+        const delElem = document.querySelectorAll('.keyboard__row');
+        for (let i = 0; i < delElem.length; i = 1 + i) {
+          delElem[i].remove();
+        }
+        if (this.lang === 'rus') {
+          this.lang = 'eng';
+          this.createKeys(this.alphabet.eng);
+        } else {
+          this.lang = 'rus';
+          this.createKeys(this.alphabet.rus);
+        }
+        this.print(document.querySelector('.input'), 'btn');
+      }
+    });
+  },
 };
 
 window.addEventListener('load', () => {
   Keyboard.addElements();
   Keyboard.createKeys(Keyboard.alphabet.rus);
   const output = document.querySelector('.input');
-  const buttons = document.querySelectorAll('.btn');
   Keyboard.isUpperMode();
-  Keyboard.print(output, buttons);
+  Keyboard.listenRealKeyboard();
+  Keyboard.changeLanguage();
+  Keyboard.print(output, 'btn');
 });
