@@ -38,12 +38,12 @@ const Keyboard = {
       document.querySelector('.keyboard').appendChild(row);
       for (let j = 0; j < alphabet[i].length; j = 1 + j) {
         const btn = document.createElement('div');
-        // if (i === 0 && j !== 13 && j !== 0) {
-        //   btn.className = `btn btn-${i + 1}-${j + 1} sym-${alphabet[i][j]}`;
-        // } else {
-        //   btn.className = `btn btn-${i + 1}-${j + 1} ${alphabet[i][j]}`;
-        // }
-        btn.className = `btn btn-${i + 1}-${j + 1} ${alphabet[i][j]}`;
+        if (i === 0 && j !== 13) {
+          btn.className = `btn btn-${i + 1}-${j + 1} sym`;
+        } else {
+          btn.className = `btn btn-${i + 1}-${j + 1} ${alphabet[i][j]}`;
+        }
+        //btn.className = `btn btn-${i + 1}-${j + 1} ${alphabet[i][j]}`;
         document.querySelector(`.row-${i + 1}`).append(btn);
         btn.innerHTML = alphabet[i][j];
         this.createMainKeys(btn, alphabet[i][j]);
@@ -132,33 +132,32 @@ const Keyboard = {
         for (let i = 0; i < symbols.length; i = 1 + i) {
           if (this.lang === 'rus') {
             symbols[i].innerHTML = this.symbols.rus[i];
-            if (!this.isFind(symbols[i].className, symbols[i].innerHTML)) {
-              symbols[i].className += ` ${symbols[i].innerHTML}`;
-            }
+            // if (!this.isFind(symbols[i].className, symbols[i].innerHTML)) {
+            //   symbols[i].className += ` ${symbols[i].innerHTML}`;
+            // }
           } else {
             symbols[i].innerHTML = this.symbols.eng[i];
-            if (!this.isFind(symbols[i].className, symbols[i].innerHTML)) {
-              symbols[i].className += ` ${symbols[i].innerHTML}`;
-            }
+            // if (!this.isFind(symbols[i].className, symbols[i].innerHTML)) {
+            //   symbols[i].className += ` ${symbols[i].innerHTML}`;
+            // }
           }
         }
         e.target.addEventListener('keyup', () => {
-          const symbols = document.querySelectorAll('.row-1 .btn');
           for (let i = 0; i < symbols.length; i = 1 + i) {
             if (this.lang === 'rus') {
               symbols[i].innerHTML = this.alphabet.rus[0][i];
-              if (this.isFind(symbols[i].className, symbols[i].innerHTML)) {
-                const currClass = symbols[i].className;
-                symbols[i].className = currClass.replace(symbols[i].innerHTML, '');
-              }
+              // if (this.isFind(symbols[i].className, symbols[i].innerHTML)) {
+              //   const currClass = symbols[i].className;
+              //   symbols[i].className = currClass.replace(symbols[i].innerHTML, '');
+              // }
               // symbols[i].className += ` ${symbols[i].innerHTML}`;
             } else {
               symbols[i].innerHTML = this.alphabet.eng[0][i];
               // symbols[i].className += ` ${symbols[i].innerHTML}`;
-              if (this.isFind(symbols[i].className, symbols[i].innerHTML)) {
-                const currClass = symbols[i].className;
-                symbols[i].className = currClass.replace(symbols[i].innerHTML, '');
-              }
+              // if (this.isFind(symbols[i].className, symbols[i].innerHTML)) {
+              //   const currClass = symbols[i].className;
+              //   symbols[i].className = currClass.replace(symbols[i].innerHTML, '');
+              // }
             }
           }
         });
@@ -184,7 +183,6 @@ const Keyboard = {
           }
         }
         e.target.addEventListener('mouseup', () => {
-          const symbols = document.querySelectorAll('.row-1 .btn');
           for (let i = 0; i < symbols.length; i = 1 + i) {
             if (this.lang === 'rus') {
               symbols[i].innerHTML = this.alphabet.rus[0][i];
@@ -210,8 +208,8 @@ const Keyboard = {
   listenRealKeyboard() {
     window.addEventListener('keydown', (e) => {
       const currClass = `.${e.key.toLowerCase()}`;
-      console.log(currClass);
-      console.log(document.querySelector(currClass));
+      // console.log(currClass);
+      // console.log(document.querySelector(currClass));
       const btn = document.querySelector(currClass);
       if (btn) {
         this.printMessage(btn, document.querySelector('.input'));
@@ -240,6 +238,7 @@ const Keyboard = {
       if (this.capsLock) {
         out.value += keyMessage.toUpperCase();
       } else {
+        console.log(keyMessage);
         out.value += keyMessage;
       }
     }
@@ -282,4 +281,7 @@ window.addEventListener('load', () => {
   Keyboard.listenRealKeyboard();
   Keyboard.changeLanguage();
   Keyboard.print(output, 'btn');
+  window.addEventListener('keydown', (e) => {
+    console.log(e.key);
+  });
 });
