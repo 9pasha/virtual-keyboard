@@ -39,11 +39,12 @@ const Keyboard = {
       for (let j = 0; j < alphabet[i].length; j = 1 + j) {
         const btn = document.createElement('div');
         if (i === 0 && j !== 13) {
-          btn.className = `btn btn-${i + 1}-${j + 1} sym`;
+          btn.className = `btn btn-${i + 1}-${j + 1} sym sym-${alphabet[i][j]}`;
+          btn.id = `${alphabet[i][j]}`;
         } else {
           btn.className = `btn btn-${i + 1}-${j + 1} ${alphabet[i][j]}`;
+          btn.id = `${alphabet[i][j]}`;
         }
-        //btn.className = `btn btn-${i + 1}-${j + 1} ${alphabet[i][j]}`;
         document.querySelector(`.row-${i + 1}`).append(btn);
         btn.innerHTML = alphabet[i][j];
         this.createMainKeys(btn, alphabet[i][j]);
@@ -69,14 +70,12 @@ const Keyboard = {
     } return false;
   },
 
-  print(output, className) {
+  virtualKeyboard(output, className) {
     const out = output;
     const elemClass = `.${className}`;
     const buttons = document.querySelectorAll(elemClass);
-    // console.log(buttons);
     for (let i = 0; i < buttons.length; i = 1 + i) {
       buttons[i].addEventListener('mousedown', (e) => {
-        // console.log(buttons);
         const keyMessage = e.target.innerHTML;
         if (this.isFind(e.target.className, 'space')) {
           out.value += ' ';
@@ -115,7 +114,8 @@ const Keyboard = {
   },
 
   isUpperMode() {
-    const capsLock = document.querySelector('.capslock');
+    const capsLock = document.getElementById('CapsLock');
+    const shift = document.getElementById('Shift');
     capsLock.addEventListener('click', () => {
       if (this.capsLock) {
         this.capsLock = false;
@@ -123,48 +123,60 @@ const Keyboard = {
         this.capsLock = true;
       }
     });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'CapsLock') {
+        if (this.capsLock) {
+          this.capsLock = false;
+        } else {
+          this.capsLock = true;
+        }
+      }
+    });
+    shift.addEventListener('mousedown', (e) => {
+      this.capsLock = true;
+      e.target.addEventListener('mouseup', () => {
+        this.capsLock = false;
+      });
+    });
   },
-  // Must be fixed
+
   isActiveShift() {
     document.addEventListener('keydown', (e) => {
       if (this.isFind(e.target.className, 'shift') || e.key === 'Shift') {
+        if (this.capsLock) {
+          this.capsLock = false;
+        } else {
+          this.capsLock = true;
+        }
         const symbols = document.querySelectorAll('.row-1 .btn');
         for (let i = 0; i < symbols.length; i = 1 + i) {
           if (this.lang === 'rus') {
             symbols[i].innerHTML = this.symbols.rus[i];
-            // if (!this.isFind(symbols[i].className, symbols[i].innerHTML)) {
-            //   symbols[i].className += ` ${symbols[i].innerHTML}`;
-            // }
+            symbols[i].id = this.symbols.rus[i];
           } else {
             symbols[i].innerHTML = this.symbols.eng[i];
-            // if (!this.isFind(symbols[i].className, symbols[i].innerHTML)) {
-            //   symbols[i].className += ` ${symbols[i].innerHTML}`;
-            // }
+            symbols[i].id = this.symbols.eng[i];
           }
         }
         e.target.addEventListener('keyup', () => {
+          if (this.capsLock) {
+            this.capsLock = false;
+          } else {
+            this.capsLock = true;
+          }
           for (let i = 0; i < symbols.length; i = 1 + i) {
             if (this.lang === 'rus') {
               symbols[i].innerHTML = this.alphabet.rus[0][i];
-              // if (this.isFind(symbols[i].className, symbols[i].innerHTML)) {
-              //   const currClass = symbols[i].className;
-              //   symbols[i].className = currClass.replace(symbols[i].innerHTML, '');
-              // }
-              // symbols[i].className += ` ${symbols[i].innerHTML}`;
+              symbols[i].id = this.alphabet.rus[0][i];
             } else {
               symbols[i].innerHTML = this.alphabet.eng[0][i];
-              // symbols[i].className += ` ${symbols[i].innerHTML}`;
-              // if (this.isFind(symbols[i].className, symbols[i].innerHTML)) {
-              //   const currClass = symbols[i].className;
-              //   symbols[i].className = currClass.replace(symbols[i].innerHTML, '');
-              // }
+              symbols[i].id = this.alphabet.eng[0][i];
             }
           }
         });
       }
     });
     document.addEventListener('mousedown', (e) => {
-      // console.log(this.isFind(e.target.className, 'shift'));
       if (this.isFind(e.target.className, 'shift') || e.key === 'Shift') {
         const symbols = document.querySelectorAll('.row-1 .btn');
         for (let i = 0; i < symbols.length; i = 1 + i) {
@@ -173,27 +185,23 @@ const Keyboard = {
             if (!this.isFind(symbols[i].className, symbols[i].innerHTML)) {
               symbols[i].className += ` ${symbols[i].innerHTML}`;
             }
-            // symbols[i].className += ` ${symbols[i].innerHTML}`;
           } else {
             symbols[i].innerHTML = this.symbols.eng[i];
             if (!this.isFind(symbols[i].className, symbols[i].innerHTML)) {
               symbols[i].className += ` ${symbols[i].innerHTML}`;
             }
-            // symbols[i].className += ` ${symbols[i].innerHTML}`;
           }
         }
         e.target.addEventListener('mouseup', () => {
           for (let i = 0; i < symbols.length; i = 1 + i) {
             if (this.lang === 'rus') {
               symbols[i].innerHTML = this.alphabet.rus[0][i];
-              // symbols[i].className += ` ${symbols[i].innerHTML}`;
               if (this.isFind(symbols[i].className, symbols[i].innerHTML)) {
                 const currClass = symbols[i].className;
                 symbols[i].className = currClass.replace(symbols[i].innerHTML, '');
               }
             } else {
               symbols[i].innerHTML = this.alphabet.eng[0][i];
-              // symbols[i].className += ` ${symbols[i].innerHTML}`;
               if (this.isFind(symbols[i].className, symbols[i].innerHTML)) {
                 const currClass = symbols[i].className;
                 symbols[i].className = currClass.replace(symbols[i].innerHTML, '');
@@ -204,14 +212,98 @@ const Keyboard = {
       }
     });
   },
-  // Must be fixed
+
   listenRealKeyboard() {
     window.addEventListener('keydown', (e) => {
-      const currClass = `.${e.key.toLowerCase()}`;
-      // console.log(currClass);
-      // console.log(document.querySelector(currClass));
-      const btn = document.querySelector(currClass);
-      if (btn) {
+      const currId = e.key.toLowerCase();
+      let btn = '';
+      if (currId === ' ') {
+        btn = document.getElementById('Space');
+        this.printMessage(btn, document.querySelector('.input'));
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else if (currId === 'control') {
+        btn = document.getElementById('Ctrl');
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else if (currId === 'alt') {
+        btn = document.getElementById('Alt');
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else if (currId === 'meta') {
+        btn = document.getElementById('Win');
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else if (currId === 'shift') {
+        btn = document.getElementById('Shift');
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else if (currId === 'capslock') {
+        btn = document.getElementById('CapsLock');
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else if (currId === 'tab') {
+        btn = document.getElementById('Tab');
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else if (currId === 'delete') {
+        btn = document.getElementById('DEL');
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else if (currId === 'enter') {
+        btn = document.getElementById('Enter');
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else if (currId === 'backspace') {
+        btn = document.getElementById('Backspace');
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else if (currId === 'arrowup') {
+        btn = document.getElementById('Up');
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else if (currId === 'arrowdown') {
+        btn = document.getElementById('Down');
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else if (currId === 'arrowleft') {
+        btn = document.getElementById('Left');
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else if (currId === 'arrowright') {
+        btn = document.getElementById('Right');
+        this.animation(btn);
+        e.target.addEventListener('keyup', () => {
+          this.defaultStyle(btn);
+        });
+      } else {
+        btn = document.getElementById(currId);
         this.printMessage(btn, document.querySelector('.input'));
         this.animation(btn);
         e.target.addEventListener('keyup', () => {
@@ -224,23 +316,17 @@ const Keyboard = {
   printMessage(button, output) {
     const out = output;
     const currElement = button;
-    const keyMessage = currElement.innerHTML;
-    if (this.isFind(currElement.className, 'space')) {
+    if (this.isFind(currElement.id.toLowerCase(), 'space')) {
       out.value += ' ';
-    }
-    if (this.isFind(currElement.className, 'backspace')) {
+    } else if (this.isFind(currElement.className, 'backspace')) {
       const value = out.value.split('');
       value.pop();
       value.pop();
       out.value = value.join('');
-    }
-    if (!this.isFind(currElement.className, 'sys-btn')) {
-      if (this.capsLock) {
-        out.value += keyMessage.toUpperCase();
-      } else {
-        console.log(keyMessage);
-        out.value += keyMessage;
-      }
+    } else if (this.capsLock) {
+      out.value += currElement.innerHTML.toUpperCase();
+    } else {
+      out.value += currElement.innerHTML;
     }
   },
 
@@ -259,7 +345,6 @@ const Keyboard = {
           this.createKeys(this.alphabet.rus);
         }
         localStorage.setItem('lang', this.lang);
-        this.print(document.querySelector('.input'), 'btn');
       }
     });
   },
@@ -275,13 +360,9 @@ const Keyboard = {
 window.addEventListener('load', () => {
   Keyboard.addElements();
   Keyboard.createKeys(Keyboard.getCurrentAlphabet());
-  const output = document.querySelector('.input');
+  Keyboard.virtualKeyboard(document.querySelector('.input'), 'btn');
   Keyboard.isUpperMode();
   Keyboard.isActiveShift();
   Keyboard.listenRealKeyboard();
   Keyboard.changeLanguage();
-  Keyboard.print(output, 'btn');
-  window.addEventListener('keydown', (e) => {
-    console.log(e.key);
-  });
 });
