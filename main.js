@@ -274,6 +274,7 @@ const Keyboard = {
         });
       } else if (currId === 'backspace') {
         btn = document.getElementById('Backspace');
+        this.printMessage(btn, document.querySelector('.input'));
         this.animation(btn);
         e.target.addEventListener('keyup', () => {
           this.defaultStyle(btn);
@@ -316,13 +317,12 @@ const Keyboard = {
   printMessage(button, output) {
     const out = output;
     const currElement = button;
-    if (this.isFind(currElement.id.toLowerCase(), 'space')) {
-      out.value += ' ';
-    } else if (this.isFind(currElement.className, 'backspace')) {
+    if (this.isFind(currElement.className, 'backspace')) {
       const value = out.value.split('');
       value.pop();
-      value.pop();
       out.value = value.join('');
+    } else if (this.isFind(currElement.className, 'space')) {
+      out.value += ' ';
     } else if (this.capsLock) {
       out.value += currElement.innerHTML.toUpperCase();
     } else {
